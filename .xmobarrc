@@ -1,4 +1,5 @@
 Config { position = Top
+       , font = "xft:Inconsolata:size=11:bold:antialias=true"
        , lowerOnStart = True
        , hideOnStart = False
        , persistent = True
@@ -14,7 +15,7 @@ Config { position = Top
                                      ] 10
 
                       -- cpu activity monitor
-                      , Run MultiCpu [ "--template" , "Cpu: <total0>%|<total1>%"
+                      , Run MultiCpu [ "--template" , "Cpu: <autototal>"
                                      , "--Low"      , "50"         -- units: %
                                      , "--High"     , "85"         -- units: %
                                      , "--low"      , "darkgreen"
@@ -31,16 +32,17 @@ Config { position = Top
                                    , "--high"     , "darkred"
                                    ] 10
 
-                    , Run Date "%a %b %_d %Y %H:%M:%S" "date" 10
-                    
+                    --, Run Date "%a %b %_d %Y %H:%M:%S" "date" 10
+		    , Run Date "%Y/%m/%d %H:%M:%S" "date" 10
+
                      -- cpu core temperature monitor
-                    , Run CoreTemp [ "--template" , "Temp: <core0>°C|<core1>°C"
+                    , Run CoreTemp [ "--template" , "Temp: <core0>° <core1>° <core2>° <core3>°"
                                    , "--Low"      , "60"        -- units: °C
                                    , "--High"     , "80"        -- units: °C
                                    , "--low"      , "darkgreen"
                                    , "--normal"   , "#bbbb00"
                                    , "--high"     , "darkred"
-                                   ] 50
+                                   ] 25
 
                     -- battery monitor
                     , Run Battery [ "--template" , "Batt: <acstatus>"
@@ -58,9 +60,20 @@ Config { position = Top
                                        -- charged status
                                        , "-i"   , "<fc=#006000>Charged</fc>"
                                   ] 50
+
+                    -- cpu frequency
+                    , Run CpuFreq [ "--template", "Freq: <cpu0> GHz"
+                                  , "-L", "0"
+                                  , "-H", "2"
+                                  , "-l", "lightblue"
+                                  , "-n","white"
+                                  , "-h", "red"
+                                  ] 25
+
                     , Run StdinReader
                     ]
 
        , sepChar = "%"
        , alignSep = "}{"
-       , template = " %StdinReader% }{ %coretemp% | %multicpu% | %memory% | %dynnetwork% | %battery% | %date%"
+       , template = " %StdinReader% }{ %coretemp% | %multicpu% | %cpufreq% | %memory% | %dynnetwork% | %battery% | %date%"
+       }
