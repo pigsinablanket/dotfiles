@@ -49,6 +49,7 @@
 ;; session customizations
 ;; ---------------------------------------------------------------------
 
+(setq column-number-mode t)
 (setq make-backup-file-name-function 'my-backup-file-name)
 
 (setq auto-mode-alist (append '(("\\.html$" . web-mode)) auto-mode-alist))
@@ -67,7 +68,7 @@
  '(custom-enabled-themes (quote (tango-dark)))
  '(package-selected-packages
    (quote
-    (magit markdown-mode rainbow-delimiters fish-completion fish-mode rainbow-mode flycheck))))
+    (magit markdown-mode rainbow-delimiters fish-mode))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
