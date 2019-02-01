@@ -34,10 +34,11 @@
 ;; hooks
 ;; ---------------------------------------------------------------------
 
-(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'prog-mode-hook 'electric-pair-mode)
+(add-hook 'prog-mode-hook 'untabify-mode)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
-(add-hook 'prog-mode-hook 'untabify-mode)
 
 ;; ---------------------------------------------------------------------
 ;; keybindings
