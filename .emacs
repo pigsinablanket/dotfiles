@@ -16,7 +16,8 @@
                      rainbow-delimiters
                      markdown-mode
                      fish-mode
-                     web-mode))
+                     web-mode
+                     intero))
 
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("gnu" . "http://elpa.gnu.org/packages/")))
@@ -39,6 +40,7 @@
 (add-hook 'prog-mode-hook 'untabify-mode)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
+(add-hook 'haskell-mode-hook 'intero-mode)  
 
 ;; ---------------------------------------------------------------------
 ;; keybindings
@@ -49,6 +51,8 @@
 ;; ---------------------------------------------------------------------
 ;; session customizations
 ;; ---------------------------------------------------------------------
+
+(setq haskell-font-lock-symbols t)
 
 (setq column-number-mode t)
 (setq make-backup-file-name-function 'my-backup-file-name)
