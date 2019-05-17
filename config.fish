@@ -21,3 +21,5 @@ alias gg "git grep"
 alias gp "git push"
 alias go "git checkout"
 
+# If bobthefish theme is used, use this:
+# set -g theme_display_hostname yes
