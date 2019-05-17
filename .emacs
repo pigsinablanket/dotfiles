@@ -1,23 +1,31 @@
 ;; ---------------------------------------------------------------------
 ;; Daniel Reimer
-;; Last Modified: Jan 30, 2019
+;; Last Modified: May 17, 2019
 ;; ---------------------------------------------------------------------
 
 ;; ---------------------------------------------------------------------
 ;; machine local config
 ;; ---------------------------------------------------------------------
 
+;; Uncomment if backscpace doesn't work
+;; (normal-erase-is-backspace-mode 0)
+
 ;; ---------------------------------------------------------------------
 ;; install any required packages on startup
 ;; ---------------------------------------------------------------------
 
-(setq package-list '(haskell-mode
-                     magit
-                     rainbow-delimiters
-                     markdown-mode
+(setq package-list '(company
                      fish-mode
+                     flycheck
+                     jedi
+                     magit
+                     markdown-mode
+                     rainbow-delimiters
+                     spaceline
                      web-mode
-                     intero))
+                     haskell-mode
+                     intero
+                     ))
 
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("gnu" . "http://elpa.gnu.org/packages/")))
@@ -35,31 +43,89 @@
 ;; hooks
 ;; ---------------------------------------------------------------------
 
-(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'prog-mode-hook 'electric-pair-mode)
-(add-hook 'prog-mode-hook 'untabify-mode)
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-(add-hook 'haskell-mode-hook 'haskell-indentation-mode)
-(add-hook 'haskell-mode-hook 'intero-mode)  
+(add-hook 'prog-mode-hook     'rainbow-delimiters-mode)
+(add-hook 'after-init-hook    'electric-pair-mode)
+(add-hook 'prog-mode-hook     'untabify-mode)
+(add-hook 'after-init-hook    'flycheck-mode)
+(add-hook 'before-save-hook   'delete-trailing-whitespace)
+(add-hook 'haskell-mode-hook  'haskell-indentation-mode)
+(add-hook 'markdown-mode-hook 'untabify-mode)
+(add-hook 'after-init-hook    'global-auto-revert-mode)
+(add-hook 'after-init-hook    'global-company-mode)
+(add-hook 'after-init-hook    'ido-mode)
+(add-hook 'haskell-mode-hook  'intero-mode)  
+;;(add-hook 'python-mode-hook   'jedi:setup)
 
 ;; ---------------------------------------------------------------------
 ;; keybindings
 ;; ---------------------------------------------------------------------
 
+(global-set-key (kbd "M-x")   'smex)
+(global-set-key (kbd "M-X")   'smex-major-mode-commands)
 (global-set-key (kbd "C-x g") 'magit-status)
+(global-set-key (kbd "C-x m") 'view-mode)
+(global-set-key (kbd "M-;")   'comment-dwim-line)
 
 ;; ---------------------------------------------------------------------
-;; session customizations
+;; customizations
 ;; ---------------------------------------------------------------------
 
-(setq haskell-font-lock-symbols t)
+;; highlight current line
+(global-hl-line-mode 1)
+(set-face-attribute 'hl-line nil :inherit nil :background "#000000")
+(setq undo-tree-visualizer-diff 1)
+(setq undo-tree-visualizer-timestamps 1)
 
-(setq column-number-mode t)
+;; tree undo mode
+(global-undo-tree-mode)
+
+;; show matching parens
+(require 'paren)
+(show-paren-mode 1)
+(setq show-paren-delay 0)
+(set-face-attribute 'show-paren-match nil :background "#493535")
+
+;; cursor goes to same place from previous sessios
+(save-place-mode 1)
+
+;; read-only files open with view-mode
+(setq view-read-only t)
+
+;; highligh past 80 characters
+(require 'whitespace)
+(global-whitespace-mode t)
+(setq whitespace-style '(face empty tabs lines-tail trailing))
+(add-hook 'window-setup-hook
+          (lambda ()
+            (set-face-attribute 'whitespace-line nil
+                                :foreground nil
+                                :background "#404040")))
+
+;; mode-line theme
+(require 'spaceline-config)
+(spaceline-spacemacs-theme)
+(spaceline-toggle-buffer-size-off)
+
+;; Enable ido
+(setq ido-enable-flex-matching t)
+(setq ido-case-fold t)
+
+;; Use my-backup-file-name function to determine where to place backups
 (setq make-backup-file-name-function 'my-backup-file-name)
 
 (setq auto-mode-alist (append '(("\\.html$" . web-mode)) auto-mode-alist))
 (setq auto-mode-alist (append '(("\\.php$" . web-mode)) auto-mode-alist))
 (setq auto-mode-alist (append '(("\\.inc$" . web-mode)) auto-mode-alist))
+
+;; Make haskell use unicode characters
+(setq haskell-font-lock-symbols t)
+
+;; Still figuring out jedi for python
+;; (add-hook 'python-mode-hook '(add-to-list 'company-backends 'company-jedi))
+;; (defun my/python-mode-hook ()
+;;  (add-to-list 'company-backends 'company-jedi))
+
+;(add-hook 'python-mode-hook 'my/python-mode-hook)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -73,7 +139,7 @@
  '(custom-enabled-themes (quote (tango-dark)))
  '(package-selected-packages
    (quote
-    (magit markdown-mode rainbow-delimiters fish-mode))))
+    (undo-tree helm smex electric-spacing spaceline-all-the-icons flycheck flycheck-pycheckers flymake-python-pyflakes column-enforce-mode jedi smart-mode-line smart-mode-line-powerline-theme company-jedi company autopair magit markdown-mode rainbow-delimiters fish-mode))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -122,3 +188,14 @@
   (add-hook 'before-save-hook #'untabify-all)
 )
 
+;; comment line rebinding
+(defun comment-dwim-line (&optional arg)
+  "Replacement for the comment-dwim command.
+   If no region is selected and current line is not blank and we are not at the end of the line,
+   then comment current line.
+   Replaces default behaviour of comment-dwim, when it inserts comment at the end of the line."
+  (interactive "*P")
+  (comment-normalize-vars)
+  (if (and (not (region-active-p)) (not (looking-at "[ \t]*$")))
+      (comment-or-uncomment-region (line-beginning-position) (line-end-position))
+    (comment-dwim arg)))
