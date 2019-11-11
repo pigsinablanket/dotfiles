@@ -1,4 +1,6 @@
 set PATH /home/dan/.local/bin $PATH
+set VIRTUAL_ENV_DISABLE_PROMPT 1
+set EDITOR "emacs -nw"
 
 alias emacs 'emacs -nw'
 alias e "emacs -nw"
