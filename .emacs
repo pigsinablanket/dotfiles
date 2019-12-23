@@ -24,7 +24,8 @@
                      spaceline
                      web-mode
                      haskell-mode
-                     intero
+                     smex
+                     undo-tree
                      ))
 
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
@@ -53,8 +54,30 @@
 (add-hook 'after-init-hook    'global-auto-revert-mode)
 (add-hook 'after-init-hook    'global-company-mode)
 (add-hook 'after-init-hook    'ido-mode)
-(add-hook 'haskell-mode-hook  'intero-mode)  
-;;(add-hook 'python-mode-hook   'jedi:setup)
+
+(add-hook 'haskell-mode-hook 'flycheck-mode)
+
+
+(use-package dante
+  :ensure t
+  :after haskell-mode
+  :commands 'dante-mode
+  :init
+  (add-hook 'haskell-mode-hook 'flycheck-mode)
+  ;; OR:
+  ;; (add-hook 'haskell-mode-hook 'flymake-mode)
+  (add-hook 'haskell-mode-hook 'dante-mode)
+  )
+
+;; (setq flymake-no-changes-timeout nil)
+;; (setq flymake-start-syntax-check-on-newline nil)
+;; (setq flycheck-check-syntax-automatically '(save mode-enabled))
+(auto-save-visited-mode 1)
+(setq auto-save-visited-interval 1)
+
+(add-hook 'dante-mode-hook
+   '(lambda () (flycheck-add-next-checker 'haskell-dante
+                '(warning . haskell-hlint))))
 
 ;; ---------------------------------------------------------------------
 ;; keybindings
@@ -139,7 +162,7 @@
  '(custom-enabled-themes (quote (tango-dark)))
  '(package-selected-packages
    (quote
-    (undo-tree helm smex electric-spacing spaceline-all-the-icons flycheck flycheck-pycheckers flymake-python-pyflakes column-enforce-mode jedi smart-mode-line smart-mode-line-powerline-theme company-jedi company autopair magit markdown-mode rainbow-delimiters fish-mode))))
+    (dante use-package haskell-snippets yasnippet company-lsp lsp-treemacs lsp-haskell lsp-mode lsp-ui flymake-haskell-multi flymake-hlint undo-tree helm smex electric-spacing spaceline-all-the-icons flycheck flycheck-pycheckers flymake-python-pyflakes column-enforce-mode jedi smart-mode-line smart-mode-line-powerline-theme company-jedi company autopair magit markdown-mode rainbow-delimiters fish-mode))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
